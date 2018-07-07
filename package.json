@@ -1,0 +1,24 @@
+{
+  "name": "mythify",
+  "version": "0.0.1",
+  "description": "A narrative scripting language.",
+  "main": "index.js",
+  "scripts": {
+	"grammar": "node build-grammar.js",
+    "twine": "node build-twine.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Josh Grams <josh@qualdan.com>",
+  "license": "MIT",
+  "dependencies": {
+    "nearley": "^2.13.0"
+  },
+  "devDependencies": {
+    "asbundle": "^2.6.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "clean-css": "^4.1.11",
+    "replacestream": "^4.0.3",
+    "uglify-js": "^3.4.1"
+  }
+}
