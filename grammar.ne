@@ -1,13 +1,16 @@
 @{%
 const moo = require('./moo')
 
+const token = ([t]) => t.value
+const concat = ([d]) => d.join('')
+
 const lexer = moo.states({
 	text: {
 		newline: { match: '\n', lineBreaks: true },
 		linkStart: '[[',
-		pipe: '|',
 		rightArrow: '->',
 		leftArrow: '<-',
+		pipe: '|',
 		linkEnd: ']]',
 		text: { error: true }  // Anything else.
 	}
@@ -18,18 +21,24 @@ const lexer = moo.states({
 
 Start -> (Text {% id %} | Link {% id %}):* {% id %}
 
-TextToken ->
-	  %text {% ([t]) => t.value %}
-	| %newline {% ([t]) => t.value %}
+RightArrow -> %rightArrow {% token %}
+LeftArrow -> %leftArrow {% token %}
+Pipe -> %pipe {% token %}
 
-Text -> TextToken:+ {% ([d]) => d.join('') %}
+PlainText -> (%text {% token %} | %newline {% token %}):+ {% concat %}
+NoArrows -> (PlainText | Pipe):+ {% concat %}
+NoRightArrow -> (PlainText | Pipe | LeftArrow):+ {% concat %}
+LinkText -> (PlainText | Pipe | LeftArrow | RightArrow):+ {% concat %}
 
-Link ->
-	  %linkStart Text %linkEnd
-		{% ([_,link,__]) => ({n:'link',a:[link]}) %}
-	| %linkStart Text %pipe Text %linkEnd
-		{% ([_,text,to,link, __]) => ({n:'link',a:[link,text]}) %}
-	| %linkStart Text %rightArrow Text %linkEnd
-		{% ([_,text,to,link,__]) => ({n:'link',a:[link,text]}) %}
-	| %linkStart Text %leftArrow Text %linkEnd
-		{% ([_,link,from,text,__]) => ({n:'link',a:[link,text]}) %}
+Link -> %linkStart LinkContents %linkEnd  {% ([_,link,__]) => link %}
+
+LinkContents ->
+	PlainText
+		{% ([link]) => ({n:'link',a:[link]}) %}
+	| LinkText %rightArrow NoRightArrow
+		{% ([text,to,link]) => ({n:'link',a:[link,text]}) %}
+	| NoArrows %leftArrow NoRightArrow
+		{% ([link,from,text]) => ({n:'link',a:[link,text]}) %}
+	| NoArrows %pipe PlainText
+		{% ([text,to,link]) => ({n:'link',a:[link,text]}) %}
+
