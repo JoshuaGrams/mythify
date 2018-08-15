@@ -6,6 +6,9 @@ const replace = require('replacestream')
 const uglify = require('uglify-js')
 const Stream = require('stream')
 
+const report = console.log || function(msg) {}
+
+
 //--------------------------------------------------------------
 // Helper functions.
 
@@ -19,7 +22,7 @@ function compressJS(code) {
 	if(typeof minified.error === 'undefined') {
 		return minified.code
 	} else {
-		console.log(minified.error)
+		report(minified.error)
 		return ''
 	}
 }
@@ -43,15 +46,15 @@ function minifyCSS(filename) {
 		var min = CleanCSS.minify(source)
 		if(min.errors.length > 0 || min.warnings.length > 0) {
 			for(let i=0; i<min.errors.length; ++i) {
-				console.log(min.errors[i])
+				report(min.errors[i])
 			}
 			for(let i=0; i<min.warnings.length; ++i) {
-				console.log(min.warnings[i])
+				report(min.warnings[i])
 			}
 		}
 		if(min.errors.length === 0) return min.styles
 	} catch(e) {
-		console.log(e);  return ''
+		report(e);  return ''
 	}
 }
 
@@ -69,11 +72,14 @@ require('./build-grammar')
 
 // Syntax highlighting.
 var highlight = bundleJS('twine-highlight.js')
+report('compiled twine-highlight.js')
 
 // Insert the engine and CSS into the HTML template.
 var engine = bundleJS('twine.js')
 fs.writeFileSync('twine.bundle.js', engine)
+report('compiled twine.js (runtime engine) to twine.bundle.js')
 var css = minifyCSS('twine.css')
+report('minified twine.css')
 collectString(fs.createReadStream('twine.html')
 	.pipe(replace(/"!(?:CSS|ENGINE)!"/g, function() {
 		if(arguments[0] === '"!ENGINE!"') return engine
@@ -82,6 +88,7 @@ collectString(fs.createReadStream('twine.html')
 
 // Insert the template and highlighter into the story format.
 function buildFormat(template) {
+	report('inserted engine and css into twine.html template')
 	var f = compressJS(fs.readFileSync('twine-format.js', 'utf8'))
 	var format = new Stream.Readable()
 	format.push(f)
@@ -93,4 +100,6 @@ function buildFormat(template) {
 				return JSON.stringify(highlight)
 			}
 	})).pipe(fs.createWriteStream('dist/format.js'))
+	report('compiled twine-format.js to dist/format.js')
+	report('\t(inserting html template and syntax highlighter code)')
 }

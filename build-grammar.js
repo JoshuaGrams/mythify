@@ -1,5 +1,7 @@
 const fs = require('fs')
 
+const report = console.log || function(msg) {}
+
 const nearley = require('nearley')
 const compile = require('nearley/lib/compile')
 const generate = require('nearley/lib/generate')
@@ -19,3 +21,4 @@ function compileGrammar(code) {
 var ne = fs.readFileSync('grammar.ne', 'utf8')
 var js = compileGrammar(ne)
 fs.writeFileSync('grammar.js', js, 'utf8')
+report('compiled grammar.ne to grammar.js')
