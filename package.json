@@ -4,12 +4,16 @@
   "description": "A narrative scripting language.",
   "main": "index.js",
   "scripts": {
-	"grammar": "node build-grammar.js",
+    "grammar": "node build-grammar.js",
     "twine": "node build-twine.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Josh Grams <josh@qualdan.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JoshuaGrams/mythify.git"
+  },
   "dependencies": {
     "nearley": "^2.13.0"
   },
