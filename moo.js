@@ -1,3 +1,4 @@
+// Modified version of tjvr's `moo` (see `LICENSE-moo`).
 // 2018-06-27 - Josh Grams <josh@qualdan.com> - make error token
 // a catch-all for anything the lexer doesn't have a rule for.
 

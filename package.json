@@ -6,7 +6,7 @@
   "scripts": {
     "grammar": "node build-grammar.js",
     "twine": "node build-twine.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test.js | faucet"
   },
   "author": "Josh Grams <josh@qualdan.com>",
   "license": "MIT",
@@ -22,7 +22,9 @@
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
     "clean-css": "^4.1.11",
+    "faucet": "0.0.1",
     "replacestream": "^4.0.3",
+    "tape": "^4.9.1",
     "uglify-js": "^3.4.1"
   }
 }
