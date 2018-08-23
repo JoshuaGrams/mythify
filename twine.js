@@ -27,17 +27,19 @@ storyFunctions.display = function(passage) {
 	var parser = new Nearley.Parser(grammar)
 	parser.feed(passage.textContent)
 
+	storyState.renderedPassage = document.createElement('div')
 	var passage = parser.results[0]
 	for(let i=0; i<passage.length; ++i) {
 		var element = passage[i]
 		if(typeof element === 'string') {
 			element = document.createTextNode(element)
-			document.body.appendChild(element)
+			storyState.renderedPassage.appendChild(element)
 		} else {
 			var fn = storyFunctions[element.n]
 			fn.apply(storyState, element.a)
 		}
 	}
+	document.body.appendChild(storyState.renderedPassage)
 }
 
 function followLink(element) {
@@ -60,7 +62,8 @@ storyFunctions.link = function(target, text) {
 			followLink(e.target)
 		}
 	})
-	document.body.appendChild(element)
+	let container = this.renderedPassage || document.body
+	container.appendChild(element)
 }
 
 
